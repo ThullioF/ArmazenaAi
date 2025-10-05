@@ -1,37 +1,47 @@
-// pages/Login.jsx
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-    if (usuario && usuario.email === email && usuario.senha === senha) {
-      localStorage.setItem("logado", "true");
-      alert(`Bem-vindo, ${usuario.nome}!`);
-      navigate("/dashboard");
-    } else {
-      alert("E-mail ou senha incorretos!");
+    if (!email.includes("@")) {
+      toast.error("Digite um e-mail válido!");
+      return;
     }
+    if (senha.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres!");
+      return;
+    }
+
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      toast.success("Login realizado com sucesso!");
+      console.log("Login:", { email, senha });
+    }, 1200);
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>Login</h2>
-        <form onSubmit={handleLogin} style={styles.form}>
+        <h2 style={styles.title}>Bem-vindo 👋</h2>
+        <p style={{ marginBottom: "1.5rem", color: "#555" }}>
+          Faça login para continuar
+        </p>
+
+        <form onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="E-mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
-            required
           />
           <input
             type="password"
@@ -39,14 +49,18 @@ export default function Login() {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             style={styles.input}
-            required
           />
-          <button type="submit" style={styles.button}>
-            Entrar
+
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
-        <p style={styles.footer}>
-          Não tem conta? <Link to="/cadastro">Criar conta</Link>
+
+        <p style={styles.footerText}>
+          Não tem conta?{" "}
+          <Link to="/cadastro" style={styles.link}>
+            Criar conta
+          </Link>
         </p>
       </div>
     </div>
@@ -54,11 +68,55 @@ export default function Login() {
 }
 
 const styles = {
-  container: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "1rem", background: "#f0f2f5" },
-  card: { background: "#fff", padding: "2rem", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", width: "100%", maxWidth: "400px", textAlign: "center" },
-  title: { marginBottom: "1.5rem", fontSize: "1.8rem", fontWeight: "bold", color: "#333" },
-  form: { display: "flex", flexDirection: "column", gap: "1rem" },
-  input: { width: "100%", padding: "0.8rem", border: "1px solid #ccc", borderRadius: "6px", fontSize: "1rem" },
-  button: { width: "100%", padding: "0.9rem", border: "none", borderRadius: "6px", background: "#4CAF50", color: "white", fontSize: "1rem", cursor: "pointer" },
-  footer: { marginTop: "1rem", fontSize: "0.9rem", color: "#555" },
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    background: "linear-gradient(135deg, #74b9ff, #a29bfe)",
+    padding: "1rem",
+  },
+  card: {
+    background: "#fff",
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+    width: "100%",
+    maxWidth: "380px",
+    textAlign: "center",
+  },
+  title: {
+    marginBottom: "0.5rem",
+    fontWeight: "600",
+  },
+  input: {
+    width: "100%",
+    padding: "0.8rem",
+    marginBottom: "1rem",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    fontSize: "1rem",
+    outline: "none",
+    transition: "border-color 0.2s ease",
+  },
+  button: {
+    width: "100%",
+    padding: "0.9rem",
+    border: "none",
+    borderRadius: "8px",
+    background: "#0984e3",
+    color: "white",
+    fontSize: "1rem",
+    cursor: "pointer",
+    transition: "background 0.3s ease",
+  },
+  footerText: {
+    marginTop: "1rem",
+    fontSize: "0.9rem",
+  },
+  link: {
+    color: "#6c5ce7",
+    textDecoration: "none",
+    fontWeight: "500",
+  },
 };
